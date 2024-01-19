@@ -1,0 +1,25 @@
+{
+  "scopeName": "source.prr",
+  "patterns": [{ "include": "#expression" }],
+  "repository": {
+    "expression": {
+      "patterns": [
+        { "include": "#header" },
+        { "include": "#deleted" },
+        { "include": "#inserted" }
+      ]
+    },
+    "header": {
+      "match": "> diff .*",
+      "name": "strong keyword.operator.new.section.header"
+    },
+    "deleted": {
+      "match": "> -.*",
+      "name": "markup.deleted.diff"
+    },
+    "inserted": {
+      "match": "> \\+.*",
+      "name": "markup.inserted.diff"
+    }
+  }
+}
