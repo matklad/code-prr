@@ -12,9 +12,9 @@ export function activate(context: vscode.ExtensionContext) {
     "prr",
     new FoldingRangeProvider(),
   );
+  vscode.languages.registerDefinitionProvider("prr", new DefinitionProvider());
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() {
   if (disposables) {
     disposables.forEach((item) => item.dispose());
@@ -44,5 +44,30 @@ class FoldingRangeProvider implements vscode.FoldingRangeProvider {
     }
 
     return result;
+  }
+}
+
+class DefinitionProvider implements vscode.DefinitionProvider {
+  provideDefinition(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    token: vscode.CancellationToken,
+  ): vscode.ProviderResult<vscode.Definition | vscode.LocationLink[]> {
+    var diff: vscode.TextLine | undefined = undefined;
+    for (var lineNumber = 0; lineNumber < document.lineCount; lineNumber++) {
+      if (token.isCancellationRequested) return undefined;
+      const line = document.lineAt(lineNumber);
+      if (line.text.startsWith("> diff")) diff = line;
+      if (position.line === lineNumber) break;
+    }
+    if (diff === undefined) return undefined;
+    const [_, path] = diff.text.split(" b/");
+    if (path === undefined) return undefined;
+
+    const folder = vscode.workspace.getWorkspaceFolder(document.uri);
+    if (folder === undefined) return undefined;
+
+    const uri = vscode.Uri.file(folder.uri.fsPath + "/" + path);
+    return new vscode.Location(uri, new vscode.Position(0, 0));
   }
 }

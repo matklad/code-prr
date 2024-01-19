@@ -21,6 +21,7 @@ $ npm run install-extension
 
 - rudimentary syntax highlighting
 - folding for .prr files
+- go to definition to the _file_ of diff
 
 ## Screenshot
 
